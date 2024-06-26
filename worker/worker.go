@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"time"
@@ -32,7 +31,7 @@ func (ff *fetchFixturesWorker) Start() {
 		log.Printf("failed to create table: %v", err)
 		return
 	}
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(24 * time.Hour)
 	defer ticker.Stop()
 	client := &http.Client{}
 
@@ -52,19 +51,14 @@ func (ff *fetchFixturesWorker) Start() {
 
 				continue
 			}
-			respppp, err := io.ReadAll(resp.Body)
-			if err != nil {
-				log.Print(err)
-				return
-			}
-			//fmt.Println(string(respppp))
+
 			var response fixtures.Response
-			err = json.Unmarshal(respppp, &response)
+			err = json.NewDecoder(resp.Body).Decode(&response)
 			if err != nil {
 				log.Print(err)
 				return
 			}
-			fmt.Println(response)
+
 			for _, fixture := range response.Data {
 				fmt.Printf("ID: %d, Name: %s, Starting At: %s, Result Info: %s\n", fixture.ID, fixture.Name, fixture.StartingAt, fixture.ResultInfo)
 			}
