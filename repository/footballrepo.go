@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 
 	"github.com/KCFLEX/astro-service2.0/cmd/fixtures"
@@ -113,12 +112,12 @@ func (repo *Repository) GetFixtures(ctx context.Context) ([]entity.Fixtures, err
 		return []entity.Fixtures{}, err
 	}
 	defer rows.Close()
-	var id int
+
 	var repoFixures []entity.Fixtures
 	for rows.Next() {
 		var fixture entity.Fixtures
-		err := rows.Scan(&id, &fixture.Name, &fixture.StartingAt, &fixture.ResultInfo)
-		fmt.Printf("id: %v, Name: %v, Starting At: %v, Result Info: %v\n", &id, &fixture.Name, &fixture.StartingAt, &fixture.ResultInfo)
+		err := rows.Scan(&fixture.ID, &fixture.Name, &fixture.StartingAt, &fixture.ResultInfo)
+
 		if err != nil {
 			return []entity.Fixtures{}, err
 		}
@@ -132,9 +131,9 @@ func (repo *Repository) GetFixtures(ctx context.Context) ([]entity.Fixtures, err
 }
 
 func (repo *Repository) GetFixturesByID(ctx context.Context, id int) (entity.Fixtures, error) {
-	query := `SELECT name, starting_at, result_info FROM fixtures WHERE id = $1`
+	query := `SELECT id, name, starting_at, result_info FROM fixtures WHERE id = $1`
 	var fixture entity.Fixtures
-	err := repo.db.QueryRowContext(ctx, query, id).Scan(&fixture.Name, &fixture.StartingAt, &fixture.ResultInfo)
+	err := repo.db.QueryRowContext(ctx, query, id).Scan(&fixture.ID, &fixture.Name, &fixture.StartingAt, &fixture.ResultInfo)
 
 	if err != nil {
 		return entity.Fixtures{}, err
