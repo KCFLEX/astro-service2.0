@@ -1,11 +1,9 @@
 package entity
 
-import "time"
-
 type Fixtures struct {
 	ID                  int
 	Name                string
-	StartingAt          time.Time
+	StartingAt          string
 	ResultInfo          string
 	Leg                 string
 	Details             interface{}
